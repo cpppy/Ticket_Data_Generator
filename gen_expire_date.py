@@ -35,8 +35,8 @@ def gen_date_list(sample_num):
 
 
 def get_random_font_color():
-    # gray_val = random.randint(0, 20) TODO
-    gray_val = random.randint(0, 10)
+    gray_val = random.randint(30, 90)
+    # gray_val = random.randint(0, 10)
     return tuple([gray_val] * 3)
 
 
@@ -57,15 +57,15 @@ def get_random_pos(bg_im_w, bg_im_h, t_width, t_height):
 
 
 def gen_one_date_sample(text, font_path):
-    b_img = Image.new("RGB", (300, 100), (255, 255, 255))
+    b_img = Image.new("RGB", (100, 30), (255, 255, 255))
     draw = ImageDraw.Draw(b_img)
     # text = '2019-05-27'
-    font_size = 50
+    font_size = 20
     font_type = ImageFont.truetype(font_path, font_size)
     text_w, text_h = draw.textsize(str(text), font=font_type)
     # print('text, w/h', text_w, text_h)
-    b_w = text_w + random.randint(20, 100)
-    b_h = text_h + random.randint(20, 80)
+    b_w = text_w + random.randint(0, 30)
+    b_h = text_h + random.randint(0, 30)
     b_img = Image.new("RGB", (b_w, b_h), (255, 255, 255))
     draw = ImageDraw.Draw(b_img)
 
@@ -75,27 +75,46 @@ def gen_one_date_sample(text, font_path):
                                          t_height=text_h)
 
     char_pos = lt_pos
-    font_color = (0, 0, 0)
+    # font_color = (0, 0, 0)
+    font_color = get_random_font_color()
     draw.text(char_pos, str(text), font_color, font=font_type)
 
     # pil ---> cv2
     res_img = cv2.cvtColor(np.asarray(b_img, np.uint8), cv2.COLOR_RGB2BGR)
     # res_img = cv2.resize(res_img, (150, 50))
-    res_img = cv2.resize(res_img, (int(b_w / 3), int(b_h / 3)))
-    res_img = cv2.resize(res_img, (b_w, b_h))
+
     # res_img = cv2.resize(res_img, (150, 50))
     # res_img = cv2.resize(res_img, (300, 100))
 
     # res_img = cv2.resize(res_img, (300, 900))
-    res_img = data_process.erode_process(res_img, ksize=(3, 3))
-    res_img = data_process.dilate_process(res_img, ksize=(3, 3))
-    # res_img = cv2.resize(res_img, (3 * b_w, 3 * b_h))
 
-    ret, th_res = cv2.threshold(src=cv2.cvtColor(res_img, cv2.COLOR_BGR2GRAY),
-                                thresh=160,
+    shrink_ratio = 3
+    res_img = cv2.resize(res_img, (int(b_w * shrink_ratio), int(b_h * shrink_ratio)))
+
+
+    process_switch = random.choice(['erode', 'dilate', 'open', 'close'])
+    if process_switch is 'erode':
+        res_img = data_process.erode_process(res_img, ksize=(3, 3))
+    elif process_switch is 'dilate':
+        res_img = data_process.dilate_process(res_img, ksize=(3, 3))
+    elif process_switch is 'open':
+        res_img = data_process.erode_process(res_img, ksize=(3, 3))
+        res_img = data_process.dilate_process(res_img, ksize=(3, 3))
+    elif process_switch is 'close':
+        res_img = data_process.dilate_process(res_img, ksize=(3, 3))
+        res_img = data_process.erode_process(res_img, ksize=(3, 3))
+    else:
+        pass
+    res_img = cv2.resize(res_img, (b_w, b_h))
+    # res_img = cv2.resize(res_img, (3 * b_w, 3 * b_h))
+    # res_img = data_process.erode_process(res_img, ksize=(3, 3))
+
+
+    ret, res_img = cv2.threshold(src=cv2.cvtColor(res_img, cv2.COLOR_BGR2GRAY),
+                                thresh=200,
                                 maxval=255,
                                 type=cv2.THRESH_BINARY)
-    return th_res
+    return res_img
 
 
 if __name__ == '__main__':
@@ -115,6 +134,7 @@ if __name__ == '__main__':
         img_save_path = os.path.join(save_dir, '%d.jpg'%idx)
         cv2.imwrite(img_save_path, res_img)
         label_dict[img_fn] = text
+        print(img_fn, font_path)
 
         pbar.update(1)
     pbar.close()

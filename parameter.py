@@ -1,8 +1,8 @@
 import os
 
-sample_num = 200
+sample_num = 1000
 
-tarfile_path = '/data/data/ticket_train_data_10w_20190321_init.tar'
+tarfile_path = '/data/data/ticket_train_data_1k_bank_id_20190326_init.tar'
 
 
 font_dir = './font_data'
