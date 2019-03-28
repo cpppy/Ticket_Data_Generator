@@ -59,7 +59,7 @@ def gen_one_date_sample(text, font_path):
     b_img = Image.new("RGB", (100, 30), (255, 255, 255))
     draw = ImageDraw.Draw(b_img)
     # text = '2019-05-27'
-    font_size = 20
+    font_size = random.randint(15, 25)
     font_type = ImageFont.truetype(font_path, font_size)
     text_w, text_h = draw.textsize(str(text), font=font_type)
     # print('text, w/h', text_w, text_h)
@@ -134,7 +134,7 @@ if __name__ == '__main__':
         img_save_path = os.path.join(save_dir, '%d.jpg' % idx)
         cv2.imwrite(img_save_path, res_img)
         label_dict[img_fn] = text
-        print(img_fn, font_path)
+        # print(img_fn, font_path)
 
         pbar.update(1)
     pbar.close()

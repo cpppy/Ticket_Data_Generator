@@ -11,6 +11,7 @@ import tqdm
 import json
 import data_split_util
 
+
 def gen_digit_list(sample_num):
     num_dict = range(0, 10)
     digit_list = random.choices(num_dict, k=sample_num)
@@ -24,8 +25,7 @@ def get_random_font_color():
 
 
 def get_random_pos(bg_im_w, bg_im_h, t_width, t_height):
-
-    dx_left, dx_right, dy_top, dy_bottom = 0,0,0,0
+    dx_left, dx_right, dy_top, dy_bottom = 0, 0, 0, 0
     # calc text pos
     lt_pos = [random.randint(dx_left, bg_im_w - t_width - dx_right),
               random.randint(dy_top, bg_im_h - t_height - dy_bottom)]
@@ -74,7 +74,6 @@ def gen_one_date_sample(text, font_path):
     shrink_ratio = 3
     res_img = cv2.resize(res_img, (int(b_w * shrink_ratio), int(b_h * shrink_ratio)))
 
-
     process_switch = random.choice(['erode', 'dilate', 'open', 'close'])
     if process_switch is 'erode':
         res_img = data_process.erode_process(res_img, ksize=(3, 3))
@@ -92,16 +91,14 @@ def gen_one_date_sample(text, font_path):
     # res_img = cv2.resize(res_img, (3 * b_w, 3 * b_h))
     # res_img = data_process.erode_process(res_img, ksize=(3, 3))
 
-
     ret, res_img = cv2.threshold(src=cv2.cvtColor(res_img, cv2.COLOR_BGR2GRAY),
-                                thresh=200,
-                                maxval=255,
-                                type=cv2.THRESH_BINARY)
+                                 thresh=200,
+                                 maxval=255,
+                                 type=cv2.THRESH_BINARY)
     return res_img
 
 
 if __name__ == '__main__':
-
 
     params.sample_num = 10000
     params.train_data_dir = '/data/data/mnist_train_data'
@@ -128,8 +125,8 @@ if __name__ == '__main__':
     for idx, text in enumerate(date_list):
         font_path = random.choice(font_path_list)
         res_img = gen_one_date_sample(text, font_path)
-        img_fn = '%d.jpg'%idx
-        img_save_path = os.path.join(save_dir, '%d.jpg'%idx)
+        img_fn = '%d.jpg' % idx
+        img_save_path = os.path.join(save_dir, '%d.jpg' % idx)
         cv2.imwrite(img_save_path, res_img)
         label_dict[img_fn] = text
         # print(img_fn, font_path)
@@ -145,19 +142,4 @@ if __name__ == '__main__':
                                    os.path.join(params.train_label_dir, 'val.json'),
                                    0.1)
 
-
     compress_util.compress_crnn_train_data()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
