@@ -100,7 +100,7 @@ def gen_one_date_sample(text, font_path):
 
 if __name__ == '__main__':
 
-    params.sample_num = 10000
+    params.sample_num = 1000
     params.train_data_dir = '/data/data/mnist_train_data'
     params.tarfile_path = tarfile_path = '/data/data/ticket_train_data_1k_ticket_id_special_num_20190327_init.tar'
     params.train_img_dir = os.path.join(params.train_data_dir, 'images')
